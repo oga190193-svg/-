@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مشويات رجب راشد | منيو وطلب أونلاين</title>
+<meta name="description" content="مشويات رجب راشد - جميع اللحوم بلدي 100%. كفتة، سجق، طرب، ريش ضاني، وجبات وصواني. اطلب الآن عبر واتساب.">
+<meta name="theme-color" content="#120c0a">
+<meta property="og:title" content="مشويات رجب راشد">
+<meta property="og:description" content="طعم يثبت في القلب - جميع اللحوم بلدي 100%">
+<meta property="og:image" content="hero.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120c0a;--card:#1d1411;--card2:#261a16;--line:#3a2a24;--red:#b3201f;--red2:#8e1514;--or:#ff8a2a;--or2:#ffb347;--tx:#f6ede6;--mut:#b8a79b;--ok:#25d366;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:128px}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;padding-bottom:96px;}
+button,input,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hero{position:relative;text-align:center;padding:44px 18px 34px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:url(hero.jpg) center/cover;opacity:.2}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,var(--bg))}
+.hero>*{position:relative;z-index:1}
+.flame{font-size:46px;filter:drop-shadow(0 0 14px #ff6a00aa)}
+.hero h1{font-size:clamp(34px,9vw,58px);font-weight:900;line-height:1.2}
+.hero h1 span{background:linear-gradient(90deg,var(--or),var(--or2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{display:inline-block;margin-top:10px;background:var(--red);padding:4px 18px;border-radius:6px;font-weight:700;font-size:15px;box-shadow:0 4px 18px #b3201f66}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.badge{background:#ffffff10;border:1px solid var(--line);border-radius:99px;padding:5px 14px;font-size:13px;color:var(--or2);font-weight:600}
+.qactions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.qbtn{background:#ffffff14;border:1px solid var(--or);color:var(--or2);padding:7px 14px;border-radius:12px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;text-decoration:none;transition:.2s}
+.qbtn:active{transform:scale(.96);background:var(--or);color:#000}
+.sticky{position:sticky;top:0;z-index:30;background:#120c0af7;border-bottom:1px solid var(--line);padding:10px 12px 8px;padding-top:calc(10px + env(safe-area-inset-top))}
+.search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px;max-width:760px;margin:0 auto 8px}
+.search input{flex:1;background:none;border:0;outline:0;padding:10px 0;font-size:15px}
+.chips{overscroll-behavior-x:contain;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;max-width:900px;margin:0 auto;padding-bottom:2px}
+.chips::-webkit-
