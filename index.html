@@ -18,7 +18,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-padding-top:128px}
 body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;padding-bottom:96px;}
-button,input,textarea{font-family:inherit;color:inherit}
+button,input,textarea,select{font-family:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
 .hero{position:relative;text-align:center;padding:44px 18px 34px;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background:url(hero.jpg) center/cover;opacity:.2}
@@ -98,13 +98,15 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
 .ln .t{font-weight:700;color:var(--or2);min-width:64px;text-align:left;font-size:14px}
 .f{margin-top:14px;display:grid;gap:10px}
 .f label{font-size:13px;color:var(--mut);font-weight:600}
-.f input,.f textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:15px;outline:0;margin-top:3px}
-.f input:focus,.f textarea:focus{border-color:var(--or)}
+.f input,.f textarea,.f select{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:15px;outline:0;margin-top:3px}
+.f input:focus,.f textarea:focus,.f select:focus{border-color:var(--or)}
+.f select option{background:#1d1411;color:#f6ede6}
 .f .bad{border-color:#ff4d4d}
 .mode{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 .mode button{padding:10px 6px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:13.5px;color:var(--mut)}
 .mode button.on{border-color:var(--or);color:var(--or2);background:#ff8a2a15}
 .sf{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#120c0a}
+.subtot{display:flex;justify-content:space-between;font-size:13.5px;color:var(--mut);margin-bottom:4px}
 .tot{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:10px}
 .tot span:last-child{color:var(--or2)}
 .wa{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--ok);color:#052e12;border-radius:14px;padding:14px;font-size:17px;font-weight:900}
@@ -164,11 +166,16 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
       <div id="tbW" style="display:none"><label for="tb">رقم الطاولة *</label><input id="tb" inputmode="numeric" placeholder="مثال: طاولة 4"></div>
       <div><label for="nm">الاسم *</label><input id="nm" autocomplete="name" placeholder="اسمك"></div>
       <div><label for="ph">رقم موبايلك</label><input id="ph" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx"></div>
-      <div id="adW"><label for="ad">العنوان بالتفصيل *</label><textarea id="ad" rows="2" autocomplete="street-address" placeholder="المنطقة، الشارع، رقم العمارة، علامة مميزة"></textarea></div>
+      <div id="znW">
+        <label for="zn">منطقة التوصيل *</label>
+        <select id="zn"></select>
+      </div>
+      <div id="adW"><label for="ad">العنوان بالتفصيل *</label><textarea id="ad" rows="2" autocomplete="street-address" placeholder="الشارع، رقم العمارة، الدور، علامة مميزة"></textarea></div>
       <div><label for="nt">ملاحظات على الطلب</label><textarea id="nt" rows="2" placeholder="مثال: من غير بصل، الشواء مظبوط..."></textarea></div>
     </div>
   </div>
   <div class="sf">
+    <div class="subtot" id="delivRow"><span>خدمة التوصيل (<span id="delivZoneLbl">لم تُحدد</span>)</span><span id="delivFeeLbl">0 جنيه</span></div>
     <div class="tot"><span>الإجمالي</span><span id="tot">0 جنيه</span></div>
     <button class="wa" id="send"><span style="font-size:22px">💬</span>إرسال الطلب عبر واتساب</button>
     <button class="clr" id="clear">تفريغ السلة</button>
@@ -184,6 +191,17 @@ const IMG_DIR='';
 const imgSrc=k=>IMG_DIR+k+'.jpg';
 const KEYP='rr_pending_v1';
 const KEY='rr_cart_v1', KEYF='rr_form_v1';
+
+/* ===== مناطق وأسعار التوصيل (للتجربة) ===== */
+const ZONES=[
+  {id:'',name:'-- اختر منطقة التوصيل --',fee:0},
+  {id:'fayoum',name:'شارع الفيوم والمناطق المجاورة',fee:15},
+  {id:'dar',name:'دار السلام / المطبعة',fee:20},
+  {id:'maadi',name:'المعادي / حدائق المعادي',fee:30},
+  {id:'haram',name:'الهرم / فيصل',fee:35},
+  {id:'dokki',name:'الدقي / المهندسين',fee:40},
+  {id:'nasr',name:'مدينة نصر / مصر الجديدة',fee:50}
+];
 /* ===== البيانات ===== */
 const CATS=[
  {id:'meals',t:'الوجبات',e:'🍽️',s:'الوجبات الفردية بالأرز والسلطة والعيش'},
@@ -238,6 +256,11 @@ try{cart=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){cart={}}
 const money=n=>n.toLocaleString('ar-EG')+' جنيه';
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* تعبئة قائمة مناطق التوصيل */
+$('#zn').innerHTML=ZONES.map(z=>`<option value="${z.id}">${z.id?`${z.name} (+${z.fee} جنيه)`:z.name}</option>`).join('');
+const getZone=()=>ZONES.find(z=>z.id===$('#zn').value)||ZONES[0];
+const delivFee=()=>mode==='توصيل'?getZone().fee:0;
+
 /* ===== رسم المنيو ===== */
 function pic(it){
   if(!it.img)return '';
@@ -281,11 +304,18 @@ function chg(key,d){
   after(key,id);
 }
 function after(key,id){save();const it=ITEMS.find(x=>x.id===id);if(it&&!it.kg)refreshAct(it);paint()}
-const total=()=>Object.values(cart).reduce((s,l)=>s+l.p*l.q,0);
+const subTotal=()=>Object.values(cart).reduce((s,l)=>s+l.p*l.q,0);
+const grandTotal=()=>subTotal()+delivFee();
 const count=()=>Object.values(cart).reduce((s,l)=>s+l.q,0);
 function paint(){
   const n=count();
-  $('#cnt').textContent=n.toLocaleString('ar-EG'); $('#barTot').textContent=money(total()); $('#tot').textContent=money(total());
+  const z=getZone();
+  $('#cnt').textContent=n.toLocaleString('ar-EG');
+  $('#barTot').textContent=money(subTotal());
+  $('#delivRow').style.display=mode==='توصيل'?'flex':'none';
+  $('#delivZoneLbl').textContent=z.id?z.name:'اختر المنطقة';
+  $('#delivFeeLbl').textContent=money(z.fee);
+  $('#tot').textContent=money(grandTotal());
   $('#bar').classList.toggle('show',n>0&&!$('#sheet').classList.contains('show'));
   const ks=Object.keys(cart);
   $('#lines').innerHTML=ks.length?ks.map(k=>{const l=cart[k];return `<div class="ln"><div class="n">${esc(l.n)}<small>${l.p} جنيه للواحد</small></div><div class="qty"><button data-dec="${k}">−</button><b>${l.q}</b><button data-inc="${k}">+</button></div><div class="t">${money(l.p*l.q)}</div></div>`}).join(''):'<div class="noc">🛒 السلة فاضية، اختار من المنيو</div>';
@@ -298,25 +328,29 @@ function openSheet(o){
   if(!o)paint();else $('#bar').classList.remove('show');
 }
 /* ===== النموذج ===== */
-try{const f=JSON.parse(localStorage.getItem(KEYF)||'{}');['nm','ph','ad','tb'].forEach(i=>{if(f[i])$('#'+i).value=f[i]});if(f.m)mode=f.m}catch(e){}
+try{const f=JSON.parse(localStorage.getItem(KEYF)||'{}');['nm','ph','ad','tb','zn'].forEach(i=>{if(f[i])$('#'+i).value=f[i]});if(f.m)mode=f.m}catch(e){}
 function syncMode(){
   document.querySelectorAll('.mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
   $('#adW').style.display=mode==='توصيل'?'':'none';
+  $('#znW').style.display=mode==='توصيل'?'':'none';
   $('#tbW').style.display=mode==='صالة'?'':'none';
+  paint();
 }
-function saveForm(){try{localStorage.setItem(KEYF,JSON.stringify({nm:$('#nm').value,ph:$('#ph').value,ad:$('#ad').value,tb:$('#tb').value,m:mode}))}catch(e){}}
+function saveForm(){try{localStorage.setItem(KEYF,JSON.stringify({nm:$('#nm').value,ph:$('#ph').value,ad:$('#ad').value,tb:$('#tb').value,zn:$('#zn').value,m:mode}))}catch(e){}}
 function send(){
   if(!count())return;
   const nm=$('#nm').value.trim(),ph=$('#ph').value.trim(),ad=$('#ad').value.trim(),tb=$('#tb').value.trim(),nt=$('#nt').value.trim();
+  const z=getZone();
   let bad=false;
-  [['nm',!nm],['ad',mode==='توصيل'&&!ad],['tb',mode==='صالة'&&!tb]].forEach(([i,b])=>{$('#'+i).classList.toggle('bad',b);if(b)bad=true});
+  [['nm',!nm],['zn',mode==='توصيل'&&!z.id],['ad',mode==='توصيل'&&!ad],['tb',mode==='صالة'&&!tb]].forEach(([i,b])=>{$('#'+i).classList.toggle('bad',b);if(b)bad=true});
   if(bad){toast('⚠️ من فضلك أكمل البيانات المطلوبة');return}
   if(ph&&!/^[0-9+\u0660-\u0669\s-]{8,16}$/.test(ph)){$('#ph').classList.add('bad');toast('⚠️ رقم الموبايل غير صحيح');return}
   saveForm();
   const lines=Object.values(cart).map((l,i)=>`${i+1}) ${l.n} × ${l.q} = ${l.p*l.q} جنيه`).join('\n');
-  const locLine=mode==='توصيل'?`\n📍 العنوان: ${ad}`:(mode==='صالة'?`\n🪑 رقم الطاولة: ${tb}`:'');
+  const locLine=mode==='توصيل'?`\n🗺️ المنطقة: ${z.name}\n📍 العنوان: ${ad}`:(mode==='صالة'?`\n🪑 رقم الطاولة: ${tb}`:'');
   const modeIcon=mode==='توصيل'?'🛵':(mode==='صالة'?'🍽️':'🏪');
-  const msg=`🔥 *طلب جديد - ${SHOP}*\n━━━━━━━━━━━━\n${lines}\n━━━━━━━━━━━━\n💰 *الإجمالي: ${total()} جنيه*${mode==='توصيل'?' (غير شامل التوصيل)':''}\n\n👤 الاسم: ${nm}${ph?`\n📞 الموبايل: ${ph}`:''}\n${modeIcon} نوع الطلب: ${mode}${locLine}${nt?`\n📝 ملاحظات: ${nt}`:''}`;
+  const feeText=mode==='توصيل'?`\n📦 قيمة الطلبات: ${subTotal()} جنيه\n🛵 خدمة التوصيل (${z.name}): ${z.fee} جنيه`:'';
+  const msg=`🔥 *طلب جديد - ${SHOP}*\n━━━━━━━━━━━━\n${lines}\n━━━━━━━━━━━━${feeText}\n💰 *الإجمالي المطلوب: ${grandTotal()} جنيه*\n\n👤 الاسم: ${nm}${ph?`\n📞 الموبايل: ${ph}`:''}\n${modeIcon} نوع الطلب: ${mode}${locLine}${nt?`\n📝 ملاحظات: ${nt}`:''}`;
   try{localStorage.setItem(KEYP,JSON.stringify({cart,t:Date.now()}))}catch(e){}
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
 }
@@ -344,6 +378,7 @@ document.addEventListener('click',e=>{
 $('#openCart').onclick=()=>openSheet(true);
 $('#close').onclick=$('#ov').onclick=()=>openSheet(false);
 $('#send').onclick=send;
+$('#zn').addEventListener('change',e=>{e.target.classList.remove('bad');saveForm();paint()});
 $('#clear').onclick=()=>{if(confirm('تفريغ السلة بالكامل؟')){cart={};save();ITEMS.forEach(refreshAct);paint()}};
 ['nm','ph','ad','tb'].forEach(i=>$('#'+i).addEventListener('input',e=>{e.target.classList.remove('bad');saveForm()}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')openSheet(false)});
