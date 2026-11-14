@@ -115,6 +115,10 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
 .note{font-size:12px;color:var(--mut);text-align:center;margin-top:8px}
 .toast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-150%);background:#000d;border:1px solid var(--or);color:#fff;padding:8px 18px;border-radius:99px;z-index:80;font-size:14px;font-weight:600;transition:.3s}
 .toast.show{transform:translate(-50%,0)}
+.svb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.svb button{padding:16px 8px;border-radius:14px;background:var(--card);border:1px solid var(--or);color:var(--or2);font-weight:900;font-size:16px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.svb button span{font-size:28px}
+.svb button:active{background:var(--or);color:#000}
 .noc{text-align:center;color:var(--mut);padding:30px 0}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -180,6 +184,17 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
     <button class="wa" id="send"><span style="font-size:22px">💬</span>إرسال الطلب عبر واتساب</button>
     <button class="clr" id="clear">تفريغ السلة</button>
     <p class="note">هيتفتح واتساب برسالة جاهزة بطلبك، اضغط إرسال لتأكيده</p>
+  </div>
+</section>
+<div class="ov" id="svcOv"></div>
+<section class="sheet" id="svc" role="dialog" aria-modal="true" aria-label="خدمة الصالة">
+  <div class="sh"><h3>🔔 خدمة الصالة</h3><button class="x" id="svcClose" aria-label="إغلاق">✕</button></div>
+  <div class="sb" style="padding-bottom:calc(18px + env(safe-area-inset-bottom))">
+    <div class="f"><div><label for="stb">رقم الطاولة *</label><input id="stb" inputmode="numeric" placeholder="مثال: 4"></div></div>
+    <div class="svb">
+      <button type="button" data-svc="waiter"><span>🙋</span>عاوز الجرسون</button>
+      <button type="button" data-svc="bill"><span>🧾</span>عاوز الحساب</button>
+    </div>
   </div>
 </section>
 <div class="toast" id="toast"></div>
@@ -354,16 +369,19 @@ function send(){
   try{localStorage.setItem(KEYP,JSON.stringify({cart,t:Date.now()}))}catch(e){}
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
 }
-$('#callWaiter').onclick=()=>{
-  const savedTb=$('#tb').value.trim();
-  const tNum=prompt('اكتب رقم الطاولة لاستدعاء الجرسون أو طلب الحساب:',savedTb);
-  if(tNum===null)return;
-  if(!tNum.trim()){toast('⚠️ من فضلك اكتب رقم الطاولة');return}
-  $('#tb').value=tNum.trim();
-  mode='صالة';syncMode();saveForm();
-  const msg=`🔔 *تنبيه خدمة صالة - ${SHOP}*\n━━━━━━━━━━━━\n🪑 *رقم الطاولة:* ${tNum.trim()}\nالعميل يطلب الجرسون أو الحساب حالاً.`;
+const openSvc=o=>{$('#svc').classList.toggle('show',o);$('#svcOv').classList.toggle('show',o)};
+$('#callWaiter').onclick=()=>{$('#stb').value=$('#tb').value.trim();openSvc(true)};
+$('#svcClose').onclick=$('#svcOv').onclick=()=>openSvc(false);
+$('#stb').addEventListener('input',e=>e.target.classList.remove('bad'));
+document.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{
+  const tNum=$('#stb').value.trim();
+  if(!tNum){$('#stb').classList.add('bad');toast('⚠️ من فضلك اكتب رقم الطاولة');return}
+  $('#tb').value=tNum;mode='صالة';syncMode();saveForm();
+  const isBill=b.dataset.svc==='bill';
+  const msg=`${isBill?'🧾':'🙋'} *${isBill?'طلب الحساب':'استدعاء الجرسون'} - ${SHOP}*\n━━━━━━━━━━━━\n🪑 *رقم الطاولة:* ${tNum}\n${isBill?'العميل يطلب الحساب حالاً.':'العميل يطلب الجرسون حالاً.'}`;
+  openSvc(false);
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
-};
+});
 /* ===== أحداث ===== */
 document.addEventListener('click',e=>{
   const t=e.target.closest('button,[data-go]'); if(!t)return;
@@ -381,7 +399,7 @@ $('#send').onclick=send;
 $('#zn').addEventListener('change',e=>{e.target.classList.remove('bad');saveForm();paint()});
 $('#clear').onclick=()=>{if(confirm('تفريغ السلة بالكامل؟')){cart={};save();ITEMS.forEach(refreshAct);paint()}};
 ['nm','ph','ad','tb'].forEach(i=>$('#'+i).addEventListener('input',e=>{e.target.classList.remove('bad');saveForm()}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')openSheet(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){openSheet(false);openSvc(false)}});
 /* بحث */
 $('#q').addEventListener('input',e=>{
   const v=e.target.value.trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه');
