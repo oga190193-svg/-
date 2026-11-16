@@ -12,7 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#120c0a;--card:#1d1411;--card2:#261a16;--line:#3a2a24;--red:#b3201f;--red2:#8e1514;--or:#ff8a2a;--or2:#ffb347;--tx:#f6ede6;--mut:#b8a79b;--ok:#25d366;--r:18px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -77,6 +77,11 @@ main{max-width:900px;margin:0 auto;padding:6px 14px}
 .promo b{font-size:20px;color:var(--or2)}
 .promo p{color:#f0d9cd;font-size:14px;margin-top:2px}
 footer{max-width:900px;margin:30px auto 0;padding:24px 16px;text-align:center;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+.dev{margin:26px auto 0;max-width:340px;padding:22px 16px;border-radius:18px;background:linear-gradient(160deg,#1a1411,#0c0807);border:1px solid #d4af3733;box-shadow:0 8px 28px #0008,inset 0 0 40px #d4af3710}
+.dev-name{font-family:'Playfair Display','Times New Roman',serif;font-weight:700;font-size:26px;color:#d9b45a;letter-spacing:.5px}
+.dev-role{margin-top:6px;font-size:17px;font-weight:600;color:#f2ece4}
+.dev-wa{display:inline-block;margin-top:16px;font-weight:800;font-size:17px;color:#d9b45a;text-decoration:none;border-top:1px solid #d4af3733;padding-top:14px;width:100%}
+.dev-wa:active{opacity:.7}
 footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
 .fl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
 .fl a{background:var(--card);border:1px solid var(--line);color:var(--tx);text-decoration:none;padding:8px 18px;border-radius:12px;font-weight:700;direction:ltr}
@@ -154,6 +159,11 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
     <a href="tel:01273226707">📞 0127 322 6707</a>
   </div>
   <div>للحجز والاستعلام</div>
+  <div class="dev">
+    <div class="dev-name">Manar Adel</div>
+    <div class="dev-role">مهندسة برمجيات</div>
+    <a class="dev-wa" href="https://wa.me/201124349186" target="_blank" rel="noopener">WhatsApp: 01124349186</a>
+  </div>
 </footer>
 <div class="bar" id="bar"><button id="openCart"><span>🛒 عرض السلة <span class="cnt" id="cnt">0</span></span><span id="barTot">0 جنيه</span></button></div>
 <div class="ov" id="ov"></div>
@@ -200,7 +210,7 @@ footer h4{color:var(--tx);font-size:18px;margin-bottom:6px}
 <div class="toast" id="toast"></div>
 <script>
 /* ===== الإعدادات ===== */
-const WA=['201019','201338'].join('');
+const WA=['201124','349186'].join('');
 const SHOP='مشويات رجب راشد';
 const IMG_DIR='';
 const imgSrc=k=>IMG_DIR+k+'.jpg';
